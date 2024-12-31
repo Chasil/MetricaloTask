@@ -45,7 +45,7 @@ class ExampleCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$system = $input->getArgument('system');
-		$jsonPayload = [
+		$data = [
 			'amount' => $input->getArgument('amount'),
 			'currency' => $input->getArgument('currency'),
 			'card_number' => $input->getArgument('card_number'),
@@ -65,7 +65,9 @@ class ExampleCommand extends Command
 		}
 
 		try {
-			$payload = $this->payloadBuilder->buildPayload($system, $jsonPayload);
+			$systemPayload = []; // Define your system payload here
+			$paymentPayloadBuilder = new PaymentPayloadBuilder();
+			$payload = $paymentPayloadBuilder->buildPayload($data, $systemPayload);
 
 			$response = $this->httpClient->request(
 				'POST',
@@ -77,9 +79,9 @@ class ExampleCommand extends Command
 			$output->writeln('<info>Transaction Successful:</info>');
 			$output->writeln('Transaction ID: ' . ($content['transaction_id'] ?? 'N/A'));
 			$output->writeln('Created At: ' . ($content['created_at'] ?? date('Y-m-d H:i:s')));
-			$output->writeln('Amount: ' . $jsonPayload['amount']);
-			$output->writeln('Currency: ' . $jsonPayload['currency']);
-			$output->writeln('Card BIN: ' . substr($jsonPayload['card_number'], 0, 6));
+			$output->writeln('Amount: ' . $data['amount']);
+			$output->writeln('Currency: ' . $data['currency']);
+			$output->writeln('Card BIN: ' . substr($data['card_number'], 0, 6));
 
 			return Command::SUCCESS;
 		} catch (ApiSystemException $e) {
