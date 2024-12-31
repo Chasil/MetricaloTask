@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\integration;
+namespace integration;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
